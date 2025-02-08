@@ -58,36 +58,40 @@
         </aside>
         <section id="products">
             <h2>Product Listings</h2>
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    fetch("http://localhost:3000/products")
-                        .then(response => response.json())
-                        .then(data => {
-                            const productsContainer = document.getElementById("products");
-                            productsContainer.innerHTML = "<h2>Product Listings</h2>"; // Reset content
-                            data.forEach(product => {
-                                productsContainer.innerHTML += `
-                                    <div class="product">
-                                        <img src="${product.image_url}" alt="Product">
-                                        <p class="product-name">${product.name}</p>
-                                        <p class="product-price">${product.price} BTC</p>
-                                        <button class="add-to-cart">Add to Cart</button>
-                                    </div>
-                                `;
-        
-                                // Add event listener to "Add to Cart" button
-                                const addToCartButton = productsContainer.querySelectorAll(".add-to-cart");
-                                addToCartButton.forEach(button => {
-                                    button.addEventListener("click", function() {
-                                        alert("Item added to cart!");
-                                    });
-                                });
-                            });
-                        })
-                        .catch(error => console.error("Error fetching products:", error));
-                });
-            </script>
         </section>
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch("http://localhost:3000/products")
+                    .then(response => response.json())
+                    .then(data => {
+                        const productsContainer = document.getElementById("products");
+                        
+                        // Clear existing products, but keep the heading
+                        productsContainer.innerHTML = "<h2>Product Listings</h2>";
+        
+                        data.forEach(product => {
+                            // Append new products properly
+                            productsContainer.insertAdjacentHTML("beforeend", `
+                                <div class="product">
+                                    <img src="${product.image_url}" alt="Product">
+                                    <p class="product-name">${product.name}</p>
+                                    <p class="product-price">${product.price} BTC</p>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            `);
+                        });
+        
+                        // Add event listeners for "Add to Cart" buttons after products are added
+                        document.querySelectorAll(".add-to-cart").forEach(button => {
+                            button.addEventListener("click", function() {
+                                alert("Item added to cart!");
+                            });
+                        });
+                    })
+                    .catch(error => console.error("Error fetching products:", error));
+            });
+        </script>        
         </main>
         </body>
         </html>
