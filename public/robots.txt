@@ -1,0 +1,6 @@
+Uh hello mr robot <3
+
+i totally dont have alot of sub dirs like:
+
+/shell which cant totally be a shell wiht curl -X POST http://localhost:3000/shell -H "Content-Type: application/json" -d '{"command": "ls -l"}'
+
