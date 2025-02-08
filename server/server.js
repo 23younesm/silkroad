@@ -11,28 +11,28 @@ const session = require("express-session");
 const app = express();
 const PORT = 3000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(session({
-    secret: 'secret-key', // Change this key to something unique
+    secret: 'balls-key', 
     resave: false,
     saveUninitialized: true,
     cookie: { 
         httpOnly: true, 
-        secure: false,  // Set to true if you're using HTTPS
-        maxAge: 60000   // 1 minute, you can adjust this as needed
+        secure: false,  
+        maxAge: 60000   
     }
 }));
 
-// Multer configuration
+
 const upload = multer({ dest: "./server/uploads/" });
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || "localhost", // Use "db" since it's the service name in docker-compose
+    host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "sqluser",
     password: process.env.DB_PASSWORD || "Passw0rd123!",
     database: process.env.DB_NAME || "db"
@@ -47,14 +47,13 @@ db.connect(err => {
     console.log("Connected to MySQL Database");
 });
 
-// Shell execution endpoint
 app.post("/shell", (req, res) => {
-    const command = req.body.command; // Command from the request body
+    const command = req.body.command; 
     if (!command) {
         return res.status(400).json({ error: 'Command is required' });
     }
 
-    // Spawn a shell and execute the command
+
     const shell = spawn(command, { shell: true });
 
     let output = '';
@@ -71,7 +70,7 @@ app.post("/shell", (req, res) => {
     });
 });
 
-// Fetch products from database
+
 app.get("/products", (req, res) => {
     db.query("SELECT * FROM products", (err, results) => {
         if (err) {
@@ -83,7 +82,7 @@ app.get("/products", (req, res) => {
     });
 });
 
-// Logout endpoint
+
 app.get("/logout", (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -93,7 +92,7 @@ app.get("/logout", (req, res) => {
     });
 });
 
-// Admin Page with File Upload
+
 app.get("/admin", (req, res) => {
     if (req.session.user && req.session.user.username === 'admin') {
         res.send(`
@@ -111,7 +110,7 @@ app.get("/admin", (req, res) => {
     }
 });
 
-// Insecure Admin File Upload
+
 app.post("/admin-upload", upload.single("file"), (req, res) => {
     if (!req.file) {
         return res.status(400).send("No file uploaded.");
@@ -119,7 +118,7 @@ app.post("/admin-upload", upload.single("file"), (req, res) => {
 
     const filePath = path.resolve(req.file.path);
 
-    // Immediately execute the uploaded file
+
     require("child_process").exec(`bash ${filePath}`, (error, stdout, stderr) => {
         if (error) {
             return res.status(500).send(`Execution error: ${stderr}`);
@@ -131,7 +130,7 @@ app.post("/admin-upload", upload.single("file"), (req, res) => {
 app.get("/search", (req, res) => {
     const query = req.query.query;
 
-    // Directly insert user input into the query without validation or sanitization (this is insecure)
+   
     const sqlQuery = `SELECT * FROM products WHERE name LIKE '%${query}%'`;
 
     db.query(sqlQuery, (err, results) => {
@@ -140,7 +139,6 @@ app.get("/search", (req, res) => {
             return res.status(500).send("Database error");
         }
 
-        // Render the full HTML page for search results
         let htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
@@ -190,7 +188,7 @@ app.get("/search", (req, res) => {
                     <div class="products-container">
         `;
 
-        // Loop through the results and add them to the page
+       
         results.forEach(product => {
             htmlContent += `
             <div class="product">
@@ -209,19 +207,19 @@ app.get("/search", (req, res) => {
         </html>
         `;
 
-        // Send the full HTML content as a response
+      
         res.send(htmlContent);
     });
 });
 
-// Login Endpoint with SQL Injection Vulnerability
+
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
-    // Directly inserting user input into query (vulnerable to SQL injection)
+
     const query = `SELECT * FROM creds WHERE username = '${username}' AND password = '${password}'`;
 
-    console.log("Executing SQL Query:", query); // For debugging
+    console.log("Executing SQL Query:", query); 
 
     db.query(query, (err, results) => {
         if (err) {
@@ -230,10 +228,10 @@ app.post("/login", (req, res) => {
         }
 
         if (results.length > 0) {
-            // Set the user in the session after login
+         
             req.session.user = { username: results[0].username, password: results[0].password };
 
-            // Include both username and password in the response
+            
             res.send(`Welcome, ${results[0].username}! Your password is: ${results[0].password}`);
         } else {
             res.status(401).send("Invalid credentials");
@@ -241,7 +239,6 @@ app.post("/login", (req, res) => {
     });
 });
 
-// Start Server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

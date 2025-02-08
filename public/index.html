@@ -67,11 +67,10 @@
                     .then(data => {
                         const productsContainer = document.getElementById("products");
                         
-                        // Clear existing products, but keep the heading
                         productsContainer.innerHTML = "<h2>Product Listings</h2>";
         
                         data.forEach(product => {
-                            // Append new products properly
+
                             productsContainer.insertAdjacentHTML("beforeend", `
                                 <div class="product">
                                     <img src="${product.image_url}" alt="Product">
@@ -82,7 +81,7 @@
                             `);
                         });
         
-                        // Add event listeners for "Add to Cart" buttons after products are added
+    
                         document.querySelectorAll(".add-to-cart").forEach(button => {
                             button.addEventListener("click", function() {
                                 alert("Item added to cart!");
