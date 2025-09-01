@@ -16,6 +16,6 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 INSERT INTO products (name, price, image_url) VALUES
-    ('Speedy Powder', '12.09', 'img/coke.jpg'),
-    ('Funny Powder', '22.05', 'img/coke.jpg'),
-    ('Giga Powder', '8.99', 'img/coke.jpg');
+    ('Speedy Potion', '12.09', 'img/chug.jpg'),
+    ('Funny Potion', '22.05', 'img/chug.jpg'),
+    ('Giga Potion', '8.99', 'img/chug.jpg');
