@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS creds (
 );
 
 INSERT INTO creds (username, password) VALUES
-    ('admin', 'Balls69Password!'),
-    ('TGM', 'TGMisVeryBalls!');
+    ('admin', 'f7Kp9Qx2'),
+    ('TGM', 'f7Kp9Qx2');
 
 CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(100),
